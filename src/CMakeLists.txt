@@ -1,5 +1,5 @@
 find_package(PythonLibs 3.6 REQUIRED)
-find_package(Boost 1.53 REQUIRED COMPONENTS system python3)
+find_package(Boost 1.53 REQUIRED COMPONENTS system)
 
 list(APPEND OBJECT_SOURCES
             TCrossSection.cxx
