@@ -1,10 +1,32 @@
-find_package(PythonLibs 3.6 REQUIRED)
-if (NOT DEFINED PYTHON_WITH_VERSION)
-  message("PYTHON_WITH_VERSION not defined, defaulting to python3")
-  set(PYTHON_WITH_VERSION python3)
-endif (NOT DEFINED PYTHON_WITH_VERSION)
-#find_package(Boost 1.53 REQUIRED COMPONENTS system ${PYTHON_WITH_VERSION})
-find_package(Boost 1.53 REQUIRED COMPONENTS system)
+if (PYTHON_VERSION_MAJOR EQUAL 2)
+    find_package(PythonLibs 2.7 REQUIRED)
+    if (NOT DEFINED PYTHON_WITH_VERSION)
+        set(PYTHON_WITH_VERSION "python")
+    endif (NOT DEFINED PYTHON_WITH_VERSION)
+elseif (PYTHON_VERSON_MAJOR EQUAL 3)
+    find_package(PythonLibs 3.6 REQUIRED)
+    if (NOT DEFINED PYTHON_WITH_VERSION)
+        if (_Python3_VERSION_MAJOR EQUAL 3 AND _Python3_VERSION_MINOR EQUAL 9)
+            set(PYTHON_WITH_VERSION "python39")
+        elseif (_Python3_VERSION_MAJOR EQUAL 3 AND _Python3_VERSION_MINOR EQUAL 6)
+            set(PYTHON_WITH_VERSION "python3")
+        else (_Python3_VERSION_MAJOR EQUAL 3 AND _Python3_VERSION_MINOR EQUAL 9)
+            message("PYTHON_WITH_VERSION not defined, defaulting to python3")
+            set(PYTHON_WITH_VERSION python3)
+        endif (_Python3_VERSION_MAJOR EQUAL 3 AND _Python3_VERSION_MINOR EQUAL 9)
+    endif (NOT DEFINED PYTHON_WITH_VERSION)
+endif (PYTHON_VERSION_MAJOR EQUAL 2)
+
+# In case you need to check what python environment variables are available
+# here, uncomment the code below and repeat the cmake command.
+#
+#get_cmake_property(_variableNames VARIABLES)
+#list (SORT _variableNames)
+#foreach (_variableName ${_variableNames})
+#    message(STATUS "${_variableName}=${${_variableName}}")
+#endforeach()
+
+find_package(Boost 1.53 REQUIRED COMPONENTS system ${PYTHON_WITH_VERSION})
 
 list(APPEND OBJECT_SOURCES
             TCrossSection.cxx
@@ -31,7 +53,7 @@ foreach(SRC IN LISTS OBJECT_SOURCES)
     list(APPEND DICT_SOURCES ${DICT})
     list(APPEND PCM_FILES ${CMAKE_CURRENT_BINARY_DIR}/${PCM})
     add_custom_command(OUTPUT ${DICT}
-                       COMMAND rootcint -f ${DICT} -c ${CMAKE_SOURCE_DIR}/include/${HDR} ${CMAKE_SOURCE_DIR}/include/${LINKDEF}
+                       COMMAND rootcint -f ${DICT} -c ${CMAKE_SOURCE_DIR}/include/${HDR} ${CMAKE_SOURCE_DIR}/include/${LINKDEF} 2>/dev/null
                        DEPENDS ${SRC}
                       )
 endforeach()
@@ -55,9 +77,13 @@ target_include_directories(Dirac PUBLIC
                            ${EXTRA_INCLUDES}
                           )
 
+execute_process(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_CFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-execute_process(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_INCLUDES OUTPUT_STRIP_TRAILING_WHITESPACE)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I ${ROOT_INCLUDES} -I ${Python3_INCLUDE_DIRS}")
+if (PYTHON_VERSION_MAJOR EQUAL 2)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ROOT_CFLAGS} -I ${Python2_INCLUDE_DIRS}")
+elseif (PYTHON_VERSION_MAJOR EQUAL 3)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ROOT_CFLAGS} -I ${Python3_INCLUDE_DIRS}")
+endif (PYTHON_VERSION_MAJOR EQUAL 2)
 
 install(TARGETS Dirac
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
