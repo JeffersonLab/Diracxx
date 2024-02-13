@@ -1,21 +1,21 @@
-if (PYTHON_VERSION_MAJOR EQUAL 2)
+if (Python_VERSION_MAJOR EQUAL 2)
     find_package(PythonLibs 2.7 REQUIRED)
     if (NOT DEFINED PYTHON_WITH_VERSION)
         set(PYTHON_WITH_VERSION "python")
     endif (NOT DEFINED PYTHON_WITH_VERSION)
-elseif (PYTHON_VERSON_MAJOR EQUAL 3)
+elseif (Python_VERSION_MAJOR EQUAL 3)
     find_package(PythonLibs 3.6 REQUIRED)
     if (NOT DEFINED PYTHON_WITH_VERSION)
-        if (_Python3_VERSION_MAJOR EQUAL 3 AND _Python3_VERSION_MINOR EQUAL 9)
+        if (Python_VERSION_MAJOR EQUAL 3 AND Python_VERSION_MINOR EQUAL 9)
             set(PYTHON_WITH_VERSION "python39")
-        elseif (_Python3_VERSION_MAJOR EQUAL 3 AND _Python3_VERSION_MINOR EQUAL 6)
+        elseif (Python_VERSION_MAJOR EQUAL 3 AND Python_VERSION_MINOR EQUAL 6)
             set(PYTHON_WITH_VERSION "python3")
-        else (_Python3_VERSION_MAJOR EQUAL 3 AND _Python3_VERSION_MINOR EQUAL 9)
+        else (Python_VERSION_MAJOR EQUAL 3 AND Python_VERSION_MINOR EQUAL 9)
             message("PYTHON_WITH_VERSION not defined, defaulting to python3")
             set(PYTHON_WITH_VERSION python3)
-        endif (_Python3_VERSION_MAJOR EQUAL 3 AND _Python3_VERSION_MINOR EQUAL 9)
+        endif (Python_VERSION_MAJOR EQUAL 3 AND Python_VERSION_MINOR EQUAL 9)
     endif (NOT DEFINED PYTHON_WITH_VERSION)
-endif (PYTHON_VERSION_MAJOR EQUAL 2)
+endif (Python_VERSION_MAJOR EQUAL 2)
 
 # In case you need to check what python environment variables are available
 # here, uncomment the code below and repeat the cmake command.
@@ -79,11 +79,7 @@ target_include_directories(Dirac PUBLIC
 
 execute_process(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_CFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-if (PYTHON_VERSION_MAJOR EQUAL 2)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ROOT_CFLAGS} -I ${Python2_INCLUDE_DIRS}")
-elseif (PYTHON_VERSION_MAJOR EQUAL 3)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ROOT_CFLAGS} -I ${Python3_INCLUDE_DIRS}")
-endif (PYTHON_VERSION_MAJOR EQUAL 2)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ROOT_CFLAGS} -I ${Python_INCLUDE_DIRS}")
 
 install(TARGETS Dirac
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
