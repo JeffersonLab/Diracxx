@@ -64,7 +64,7 @@ add_library(Dirac SHARED
             python_bindings.cxx
            )
 
-target_link_libraries(Dirac ${Boost_LIBRARIES} ${PythonLibs_LIBRARIES})
+target_link_libraries(Dirac PUBLIC Boost::system ${PYTHON_TARGET})
 
 set_target_properties(Dirac PROPERTIES VERSION ${PROJECT_VERSION}
                                        SOVERSION ${PROJECT_VERSION_MAJOR})

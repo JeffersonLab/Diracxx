@@ -9,8 +9,11 @@ if(FORCE_PYTHON2)
   message("choosing python2 over python3...")
   find_package(Python2 REQUIRED COMPONENTS Interpreter Development)
   set(Python_INCLUDE_DIRS ${Python2_INCLUDE_DIRS})
+  set(PYTHON_TARGET Python2::Python)
 else(FORCE_PYTHON2)
-  find_package(Python REQUIRED COMPONENTS Interpreter Development)
+  find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+  set(Python_INCLUDE_DIRS ${Python3_INCLUDE_DIRS})
+  set(PYTHON_TARGET Python3::Python)
 endif(FORCE_PYTHON2)
 
 # build libDirac from sources
@@ -35,8 +38,28 @@ install(DIRECTORY ${CMAKE_SOURCE_DIR}/python DESTINATION .)
 # add a symlink to libDirac.so in the python directory
 install(CODE "execute_process(COMMAND ln -s ../lib/libDirac.so ${CMAKE_INSTALL_PREFIX}/python/libDirac.so)")
 
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
+set(PATH_VARS_DIR "lib/cmake/Diracxx")
+configure_package_config_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/DiracxxConfig.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/DiracxxConfig.cmake"
+    INSTALL_DESTINATION ${PATH_VARS_DIR}
+    PATH_VARS CMAKE_INSTALL_INCLUDEDIR
+)
+write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/DiracxxConfigVersion.cmake"
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY AnyNewerVersion
+)
+install(FILES 
+    "${CMAKE_CURRENT_BINARY_DIR}/DiracxxConfig.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/DiracxxConfigVersion.cmake"
+    DESTINATION ${PATH_VARS_DIR}
+)
 install(EXPORT DiracxxTargets
-        FILE DiracxxConfig.cmake
-        NAMESPACE Diracxx::
-        DESTINATION lib/cmake/Diracxx
-       )
+    FILE DiracxxTargets.cmake
+    NAMESPACE Diracxx::
+    DESTINATION ${PATH_VARS_DIR}
+)

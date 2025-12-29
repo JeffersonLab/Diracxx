@@ -1,0 +1,14 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+# Standard way to propagate dependencies
+find_dependency(Boost REQUIRED COMPONENTS system)
+
+# If you are using Python3 in Diracxx
+find_dependency(Python3 REQUIRED COMPONENTS Development)
+
+# Include the target definitions
+include("${CMAKE_CURRENT_LIST_DIR}/DiracxxTargets.cmake")
+
+set_and_check(DIRACXX_INCLUDE_DIRS "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@")
