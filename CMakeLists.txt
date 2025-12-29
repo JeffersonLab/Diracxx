@@ -34,3 +34,9 @@ install(DIRECTORY ${CMAKE_SOURCE_DIR}/python DESTINATION .)
 
 # add a symlink to libDirac.so in the python directory
 install(CODE "execute_process(COMMAND ln -s ../lib/libDirac.so ${CMAKE_INSTALL_PREFIX}/python/libDirac.so)")
+
+install(EXPORT DiracxxTargets
+        FILE DiracxxConfig.cmake
+        NAMESPACE Diracxx::
+        DESTINATION lib/cmake/Diracxx
+       )

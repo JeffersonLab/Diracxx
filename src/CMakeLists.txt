@@ -70,11 +70,11 @@ set_target_properties(Dirac PROPERTIES VERSION ${PROJECT_VERSION}
                                        SOVERSION ${PROJECT_VERSION_MAJOR})
 
 target_include_directories(Dirac PUBLIC
-                           "${PROJECT_SOURCE_DIR}"
-                           "${PROJECT_SOURCE_DIR}/include"
-                           "${PROJECT_SOURCE_DIR}/rootmacros"
-                           "${CMAKE_SOURCE_DIR}/src"
-                           ${EXTRA_INCLUDES}
+                           $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+                           $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+                           $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/rootmacros>
+                           $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
+                           $<INSTALL_INTERFACE:include>
                           )
 
 execute_process(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_CFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -82,6 +82,7 @@ execute_process(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_CFLAGS OUTPUT_
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ROOT_CFLAGS} -I ${Python_INCLUDE_DIRS}")
 
 install(TARGETS Dirac
+        EXPORT DiracxxTargets
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
        )
