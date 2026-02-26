@@ -13,4 +13,5 @@
 # author: richard.t.jones at uconn.edu
 # version: august 16, 2017
 
+import ROOT
 from libDirac import *
